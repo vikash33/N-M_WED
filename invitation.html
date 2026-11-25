@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#E8DFF0" />
+  <title>Neha &amp; Mayank — Wedding Invitation</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    iframe { display: block; width: 100%; height: 100%; border: 0; }
+    #start-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(54, 33, 57, .55);
+      backdrop-filter: blur(5px);
+    }
+    #start-button {
+      max-width: 340px;
+      padding: 18px 26px;
+      border: 1px solid #C9A875;
+      border-radius: 999px;
+      background: #FDFBF9;
+      color: #4A314D;
+      font: 600 15px/1.5 system-ui, sans-serif;
+      box-shadow: 0 12px 36px rgba(0,0,0,.25);
+      cursor: pointer;
+    }
+    #status {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="invitation" src="./invitation.html" title="Neha and Mayank wedding invitation"></iframe>
+
+  <div id="start-screen">
+    <button id="start-button" type="button" disabled>
+      Preparing invitation…
+      <span id="status">Please wait a moment.</span>
+    </button>
+  </div>
+
+  <audio id="wedding-song" src="./aaj-se-teri.mp3" loop preload="auto"></audio>
+
+  <script>
+    const frame = document.getElementById('invitation');
+    const audio = document.getElementById('wedding-song');
+    const startButton = document.getElementById('start-button');
+    const status = document.getElementById('status');
+
+    frame.addEventListener('load', () => {
+      startButton.disabled = false;
+      startButton.firstChild.textContent = 'Start music & open the invitation';
+      status.textContent = 'Tap once to start the song and card animation.';
+    });
+
+    startButton.addEventListener('click', async () => {
+      try {
+        const cardDocument = frame.contentDocument;
+        const cardAudio = cardDocument.getElementById('bg-music');
+        if (cardAudio) {
+          cardAudio.pause();
+          cardAudio.volume = 0;
+        }
+
+        const envelope = cardDocument.getElementById('envelope-stage');
+        if (envelope) envelope.click();
+      } catch (error) {
+        status.textContent = 'Could not open the invitation. Please reload and try again.';
+        return;
+      }
+
+      try {
+        audio.volume = 0.85;
+        await audio.play();
+        document.getElementById('start-screen').remove();
+      } catch (error) {
+        status.textContent = 'Music could not start. Check the MP3 file and tap again.';
+      }
+    });
+  </script>
+</body>
+</html>
