@@ -6,12 +6,70 @@
   <meta name="theme-color" content="#E8DFF0" />
   <title>Neha &amp; Mayank — Wedding Invitation</title>
   <style>
+    :root { --plum:#4A314D; --lilac:#E8DFF0; --gold:#C9A875; --ivory:#FDFBF9; }
     * { box-sizing:border-box; }
-    html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#E8DFF0; }
-    iframe { display:block; width:100%; height:100%; border:0; }
+    html,body { width:100%; height:100%; margin:0; }
+    body { min-height:100svh; display:grid; place-items:center; overflow:hidden; background:radial-gradient(circle at top,#EFE8F6,#D3C3E1); color:var(--plum); font-family:Georgia,serif; }
+    #card { width:min(430px,100vw); height:100svh; position:relative; overflow:hidden; background:var(--ivory); box-shadow:0 20px 60px rgba(74,49,77,.22); text-align:center; }
+    #overlay { position:absolute; inset:0; z-index:20; display:grid; place-items:center; background:var(--lilac); transition:opacity .8s,visibility .8s; }
+    #overlay.open { opacity:0; visibility:hidden; pointer-events:none; }
+    #seal { width:150px; height:150px; border:2px solid var(--gold); border-radius:50%; background:linear-gradient(145deg,#f7eef7,#c8b1d6); color:var(--plum); box-shadow:0 12px 30px rgba(74,49,77,.25); cursor:pointer; font-family:inherit; }
+    #seal strong { display:block; font-size:28px; }
+    #seal span { display:block; margin-top:10px; color:#946F3D; font-size:12px; letter-spacing:.18em; }
+    main { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px 24px; }
+    .crest { width:210px; height:210px; border:2px solid var(--gold); border-radius:50%; display:grid; place-content:center; margin-bottom:28px; }
+    h1 { margin:0; font-size:52px; font-weight:400; }
+    h2 { margin:12px 0 0; font-size:24px; font-weight:400; }
+    p { line-height:1.7; }
+    #music { position:absolute; right:16px; bottom:16px; z-index:30; width:58px; height:58px; border:1px solid var(--gold); border-radius:50%; background:var(--ivory); color:var(--plum); box-shadow:0 8px 24px rgba(74,49,77,.22); cursor:pointer; font-size:22px; }
+    #music.playing { background:var(--plum); color:white; }
   </style>
 </head>
 <body>
-  <iframe id="invitation" src="./invitation.html" title="Neha and Mayank wedding invitation"></iframe>
+  <div id="card">
+    <div id="overlay"><button id="seal" type="button" aria-label="Open wedding invitation"><strong>N &amp; M</strong><span>Tap to open</span></button></div>
+    <main>
+      <div class="crest"><h1>N &amp; M</h1></div>
+      <h2>Neha &amp; Mayank</h2>
+      <p>25th January 2027</p>
+      <p>Wedding Ceremony</p>
+    </main>
+    <button id="music" type="button" aria-label="Play or pause music">▶</button>
+  </div>
+  <audio id="bg-music" src="aaj_se_teri.mp3" loop preload="auto"></audio>
+  <script>
+    const overlay = document.getElementById('overlay');
+    const seal = document.getElementById('seal');
+    const music = document.getElementById('music');
+    const audio = document.getElementById('bg-music');
+
+    async function playMusic() {
+      try {
+        audio.volume = 0.85;
+        await audio.play();
+        music.textContent = 'Ⅱ';
+        music.classList.add('playing');
+      } catch (error) {
+        console.warn('Audio playback failed:', error);
+        music.textContent = '▶';
+        music.classList.remove('playing');
+      }
+    }
+
+    function pauseMusic() {
+      audio.pause();
+      music.textContent = '▶';
+      music.classList.remove('playing');
+    }
+
+    seal.addEventListener('click', async () => {
+      overlay.classList.add('open');
+      await playMusic();
+    });
+
+    music.addEventListener('click', () => {
+      if (audio.paused) playMusic(); else pauseMusic();
+    });
+  </script>
 </body>
 </html>
